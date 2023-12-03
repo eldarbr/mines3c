@@ -18,3 +18,24 @@ void Exception(const char message[], int q) {
     printf("%s", message);
     exit(q);
 }
+
+
+void DrawMineField(const struct MineField *const mineField, const bool zCoord) {
+    const signed char** fieldContent = mfGetContent(mineField)[zCoord];
+    // const bool** fieldMask = mfGetMask(mineField)[zCoord];
+    const size_t fieldSize = mineField->fieldSize;
+
+    for (size_t ix = 0; ix != fieldSize; ++ix) {
+        for (size_t iy = 0; iy != fieldSize; ++iy) {
+            const signed char* currentVal = &fieldContent[ix][iy];
+            if (*currentVal > 0) {
+                printf("%d ", *currentVal);
+            } else if (*currentVal == 0) {
+                printf("  ");
+            } else {
+                printf("x ");
+            }
+        }
+        printf("\n");
+    }
+}
