@@ -1,0 +1,11 @@
+-fcolor-diagnostics
+-fansi-escape-codes
+-O0
+-pedantic-errors
+-Wall
+-Werror
+-Wextra
+-g
+<list of .c files to link>
+-o
+<output file>
