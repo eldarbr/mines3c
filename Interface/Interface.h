@@ -7,6 +7,8 @@
 #include "../MineField/MineField.h"
 
 
+void PauseExec(void);
+
 void ClearScreen(void);
 
 void RepositionCursor(size_t, size_t);

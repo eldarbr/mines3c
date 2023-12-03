@@ -39,3 +39,9 @@ void DrawMineField(const struct MineField *const mineField, const bool zCoord) {
         printf("\n");
     }
 }
+
+
+void PauseExec(void) {
+    printf("Press any key to continue..");
+    printf("%c\n", getchar());
+}
