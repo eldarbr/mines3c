@@ -58,8 +58,8 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
 void mfDestructor(struct MineField *const mineField) {
     const size_t fieldSize = mineField->fieldSize;
 
-    for (size_t i = 2; i != 0; --i) {
-        for (size_t j = fieldSize; j != 0; --j) {
+    for (int i = 1; i != -1; --i) {
+        for (long j = ((long)fieldSize)-1; j != -1; --j) {
             free(mineField->fieldContent[i][j]);
             free(mineField->fieldMask[i][j]);
         }
