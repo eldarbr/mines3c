@@ -15,7 +15,7 @@ void RepositionCursor(size_t, size_t);
 
 void Exception(const char[], int);
 
-void DrawMineField(const struct MineField *const, const bool zCoord);
+void DrawMineField(const struct MineField *const mf, const bool zCoord);
 
 
 #endif

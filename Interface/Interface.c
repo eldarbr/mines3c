@@ -20,17 +20,18 @@ void Exception(const char message[], int q) {
 }
 
 
-void DrawMineField(const struct MineField *const mineField, const bool zCoord) {
-    const signed char** fieldContent = mfGetContent(mineField)[zCoord];
-    // const bool** fieldMask = mfGetMask(mineField)[zCoord];
-    const size_t fieldSize = mineField->fieldSize;
+void DrawMineField(const struct MineField *const mf, const bool zCoord) {
+    const size_t fieldSize = mf->fieldSize;
 
     for (size_t ix = 0; ix != fieldSize; ++ix) {
         for (size_t iy = 0; iy != fieldSize; ++iy) {
-            const signed char* currentVal = &fieldContent[ix][iy];
-            if (*currentVal > 0) {
-                printf("%d ", *currentVal);
-            } else if (*currentVal == 0) {
+            const struct Coords tempCoords = {zCoord, ix, iy};
+            const signed char tileContent = mfGetTileContent(mf, &tempCoords);
+            // bool tileMask = mfGetTileMask(mf, &tempCoords);
+
+            if (tileContent > 0) {
+                printf("%d ", tileContent);
+            } else if (tileContent == 0) {
                 printf("  ");
             } else {
                 printf("x ");

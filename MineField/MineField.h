@@ -31,8 +31,8 @@ struct MineField* mfConstructor(const size_t size, const size_t numMines);
 void mfDestructor(struct MineField *const);
 
 bool mfGetTileMask(const struct MineField *const mf, const struct Coords *const c);
+signed char mfGetTileContent(const struct MineField *const mf, const struct Coords *const c);
 void mfOpenTile(struct MineField *const mf, const struct Coords *const c);
-bool mfGetTileContent(const struct MineField *const mf, const struct Coords *const c);
 
 
 struct Coords GenerateMine(const size_t);
