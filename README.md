@@ -1,2 +1,4 @@
 # mines3c
-like mines3d, but written in c
+Like mines3d, but written in c
+
+**Minesweeper 3d**
