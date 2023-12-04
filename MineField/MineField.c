@@ -26,7 +26,7 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
         }
     }
 
-
+    // generate and save mines
     for (size_t i = 0; i != inpNumMines; ++i) {
         struct Coords newMine = GenerateMine(inpSize);
         if (mfIsThisAMine(mineField, &newMine)) {
