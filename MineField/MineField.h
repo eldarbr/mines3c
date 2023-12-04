@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 
 struct Coords {
@@ -22,21 +23,21 @@ struct Coords {
 
 
 struct MineField {
-    signed char ***fieldContent;
-    bool ***fieldMask;  // false = tile is closed (default)
+    signed char *fieldContent;
+    bool *fieldMask;  // false = tile is closed (default)
     size_t fieldSize;
 };
 struct MineField* mfConstructor(const size_t size, const size_t numMines);
 void mfDestructor(struct MineField *const);
 
-
-const signed char*** mfGetContent(const struct MineField *const);
-const bool*** mfGetMask(const struct MineField *const);
-void mfOpenTile(struct MineField *const, const struct Coords *const);
-bool mfIsThisAMine(const struct MineField *const, const struct Coords *const);
+bool mfGetTileMask(const struct MineField *const mf, const struct Coords *const c);
+void mfOpenTile(struct MineField *const mf, const struct Coords *const c);
+bool mfGetTileContent(const struct MineField *const mf, const struct Coords *const c);
 
 
 struct Coords GenerateMine(const size_t);
+
+size_t FindArrPosition(const struct MineField *const mf, const struct Coords *const c);
 
 
 #endif

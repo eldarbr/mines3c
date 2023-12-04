@@ -10,21 +10,13 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
 
     mineField->fieldSize = inpSize;
 
-    // allocate and init field content and mask 
-    mineField->fieldContent = malloc(sizeof(signed char) * 2 * inpSize * inpSize);
-    mineField->fieldMask = malloc(sizeof(bool) * 2 * inpSize * inpSize);
-    for (size_t i = 0; i != 2; ++i) {
-        mineField->fieldContent[i] = malloc(sizeof(signed char) * inpSize * inpSize);
-        mineField->fieldMask[i] = malloc(sizeof(bool) * inpSize * inpSize);
-        for (size_t j = 0; j != inpSize; ++j) {
-            mineField->fieldContent[i][j] = malloc(sizeof(signed char) * inpSize);
-            mineField->fieldMask[i][j] = malloc(sizeof(bool) * inpSize);
-            for (size_t k = 0; k != inpSize; ++k) {
-                mineField->fieldContent[i][j][k] = 0;
-                mineField->fieldMask[i][j][k] = false;
-            }
-        }
-    }
+    unsigned long contentBytes = sizeof(signed char) * 2 * inpSize * inpSize;
+    mineField->fieldContent = (signed char*)malloc(contentBytes);
+    memset(mineField->fieldContent, 0, contentBytes);
+
+    unsigned long maskBytes = sizeof(bool) * 2 * inpSize * inpSize;
+    mineField->fieldMask = (bool*)malloc(maskBytes);
+    memset(mineField->fieldMask, 0, maskBytes);
 
     // generate and save mines
     for (size_t i = 0; i != inpNumMines; ++i) {
@@ -58,14 +50,6 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
 void mfDestructor(struct MineField *const mineField) {
     const size_t fieldSize = mineField->fieldSize;
 
-    for (int i = 1; i != -1; --i) {
-        for (long j = ((long)fieldSize)-1; j != -1; --j) {
-            free(mineField->fieldContent[i][j]);
-            free(mineField->fieldMask[i][j]);
-        }
-        free(mineField->fieldContent[i]);
-        free(mineField->fieldMask[i]);
-    }
     free(mineField->fieldContent);
     free(mineField->fieldMask);
 
@@ -107,4 +91,21 @@ struct Coords GenerateMine(const size_t fieldSize) {
     bool z = rand() % 2;
     struct Coords c = {z, x, y};
     return c;
+}
+
+
+size_t FindArrPosition(const struct MineField *const mf,
+                                const struct Coords *const c) {
+
+    size_t position = 0;
+
+    const size_t fieldSize = mf->fieldSize;
+
+    position += c->y;
+    position += fieldSize * c->x;
+    if (c->z) {
+        position += fieldSize * fieldSize;
+    }
+
+    return position;
 }
