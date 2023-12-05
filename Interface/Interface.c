@@ -27,14 +27,18 @@ void DrawMineField(const struct MineField *const mf, const bool zCoord) {
         for (size_t iy = 0; iy != fieldSize; ++iy) {
             const struct Coords tempCoords = {zCoord, ix, iy};
             const signed char tileContent = mfGetTileContent(mf, &tempCoords);
-            // bool tileMask = mfGetTileMask(mf, &tempCoords);
+            bool tileMask = mfGetTileMask(mf, &tempCoords);
 
-            if (tileContent > 0) {
-                printf("%d ", tileContent);
-            } else if (tileContent == 0) {
-                printf("  ");
+            if (!tileMask) {
+                printf("%c ", (char)177);
             } else {
-                printf("x ");
+                if (tileContent > 0) {
+                    printf("%d", tileContent);
+                } else if (tileContent == 0) {
+                    printf(" ");
+                } else {
+                    printf("x");
+                }
             }
         }
         printf("\n");
@@ -45,4 +49,26 @@ void DrawMineField(const struct MineField *const mf, const bool zCoord) {
 void PauseExec(void) {
     printf("Press ENTER to continue..");
     while ( getchar() != '\n' );
+}
+
+
+int GetUserChoice(void) {
+    int userChoice;
+    printf("> ");
+    if (scanf_s("%d", &userChoice) == 0) {
+        return -1;
+    }
+    return userChoice;
+}
+
+void Greetings(void) {
+    printf("mines3c\n\n");
+    PauseExec();
+}
+
+
+void AskForDifficulty(void) {
+    printf("Please choose game difficulty:\n");
+    printf("1. 8*8\n");
+    printf("2. 10*10\n");
 }
