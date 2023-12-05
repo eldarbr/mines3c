@@ -27,6 +27,17 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
     }
     memset(mineField->fieldMask, 0, maskBytes);
 
+    unsigned long markingBytes = sizeof(bool) * 2 * inpSize * inpSize;
+    mineField->fieldMarking = (bool*)malloc(markingBytes);
+    if (mineField->fieldMarking == NULL) {
+        free(mineField->fieldContent);
+        free(mineField->fieldMask);
+        free(mineField);
+        return NULL;
+    }
+    memset(mineField->fieldMarking, 0, markingBytes);
+
+
     // generate and save mines
     for (size_t i = 0; i != inpNumMines; ++i) {
         struct Coords newMine = GenerateMine(inpSize);
@@ -80,12 +91,16 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
 void mfDestructor(struct MineField *const mineField) {
     free(mineField->fieldContent);
     free(mineField->fieldMask);
+    free(mineField->fieldMarking);
 
     free(mineField);
 }
 
 
 void mfOpenTile(struct MineField *const mf, const struct Coords *const tile) {
+    if (mfGetTileMarking(mf, tile)) {
+        return;
+    }
     mf->fieldMask[FindArrPosition(mf, tile)] = true;
 }
 
@@ -97,6 +112,20 @@ bool mfGetTileMask(const struct MineField *const mf, const struct Coords *const 
 signed char mfGetTileContent(const struct MineField *const mf, const struct Coords *const c) {
     return mf->fieldContent[FindArrPosition(mf, c)];
 }
+
+bool mfGetTileMarking(const struct MineField *const mf, const struct Coords *const c) {
+    return mf->fieldMarking[FindArrPosition(mf, c)];
+}
+
+
+void mfSwitchMarkTile(struct MineField *const mf, const struct Coords *const tile) {
+    if (mfGetTileMask(mf, tile)) {
+        return;
+    }
+    size_t arrPos = FindArrPosition(mf, tile);
+    mf->fieldMarking[arrPos] = !mf->fieldMarking[arrPos];
+}
+
 
 struct Coords GenerateMine(const size_t fieldSize) {
     size_t x = rand() % fieldSize;

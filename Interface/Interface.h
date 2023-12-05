@@ -20,10 +20,10 @@ void Exception(const char[], int);
 void DrawMineField(const struct MineField *const mf, const bool zCoord);
 
 
-int GetUserChoice(void);
+int GetUserChoiceDiff(void);
 
 
-
+int GetUserCommand(int);
 
 
 void Greetings(void);
