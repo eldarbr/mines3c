@@ -9,6 +9,7 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
     struct MineField *mineField = malloc(sizeof(struct MineField));
 
     mineField->fieldSize = inpSize;
+    mineField->numberTotalTiles = 2 * inpSize * inpSize;
 
     unsigned long contentBytes = sizeof(signed char) * 2 * inpSize * inpSize;
     mineField->fieldContent = (signed char*)malloc(contentBytes);
@@ -39,6 +40,7 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
 
 
     // generate and save mines
+    mineField->numberTotalMines = inpNumMines;
     for (size_t i = 0; i != inpNumMines; ++i) {
         struct Coords newMine = GenerateMine(inpSize);
         if (mfGetTileContent(mineField, &newMine) < 0) {
@@ -101,7 +103,11 @@ void mfOpenTile(struct MineField *const mf, const struct Coords *const tile) {
     if (mfGetTileMarking(mf, tile)) {
         return;
     }
-    mf->fieldMask[FindArrPosition(mf, tile)] = true;
+    size_t arrPos = FindArrPosition(mf, tile);
+    if (!mf->fieldMask[arrPos]) {
+        mf->numberOpenTiles++;
+        mf->fieldMask[arrPos] = true;
+    }
 }
 
 
@@ -123,6 +129,13 @@ void mfSwitchMarkTile(struct MineField *const mf, const struct Coords *const til
         return;
     }
     size_t arrPos = FindArrPosition(mf, tile);
+    if (mfGetTileContent(mf, tile) < 0) {
+        if (!mf->fieldMarking[arrPos]) {
+            mf->numberCorrectlyMarkedMines++;
+        } else {
+            mf->numberCorrectlyMarkedMines--;
+        }
+    }
     mf->fieldMarking[arrPos] = !mf->fieldMarking[arrPos];
 }
 
@@ -150,4 +163,40 @@ size_t FindArrPosition(const struct MineField *const mf,
     }
 
     return position;
+}
+
+
+void mfFloodOpen(struct MineField *const mf, const struct Coords *const startTile) {
+
+    if (mfGetTileMask(mf, startTile)) {
+        return;
+    }
+
+    mfOpenTile(mf, startTile);
+
+    if (mfGetTileContent(mf, startTile) == 0) {
+
+        struct Coords tmpC;
+
+        if (startTile->x > 0) {
+            tmpC = *startTile;
+            tmpC.x--;
+            mfFloodOpen(mf, &tmpC);
+        }
+        if (startTile->x + 1 < mf->fieldSize) {
+            tmpC = *startTile;
+            tmpC.x++;
+            mfFloodOpen(mf, &tmpC);
+        }
+        if (startTile->y > 0) {
+            tmpC = *startTile;
+            tmpC.y--;
+            mfFloodOpen(mf, &tmpC);
+        }
+        if (startTile->y + 1 < mf->fieldSize) {
+            tmpC = *startTile;
+            tmpC.y++;
+            mfFloodOpen(mf, &tmpC);
+        }
+    }
 }

@@ -35,10 +35,11 @@ void DrawMineField(const struct MineField *const mf, const bool zCoord) {
     const size_t fieldSize = mf->fieldSize;
 
     if (zCoord) {
-        printf("+\n");
+        printf("+");
     } else {
-        printf("-\n");
+        printf("-");
     }
+    printf(",%lu,%lu\n", mf->numberCorrectlyMarkedMines, mf->numberOpenTiles);
 
     for (size_t ix = 0; ix != fieldSize; ++ix) {
         for (size_t iy = 0; iy != fieldSize; ++iy) {

@@ -27,6 +27,10 @@ struct MineField {
     bool *fieldMask;  // false = tile is closed (default)
     bool *fieldMarking;  // false = tile is not marked (default)
     size_t fieldSize;
+    size_t numberTotalTiles;
+    size_t numberTotalMines;
+    size_t numberCorrectlyMarkedMines;
+    size_t numberOpenTiles;
 };
 struct MineField* mfConstructor(const size_t size, const size_t numMines);
 void mfDestructor(struct MineField *const);
@@ -37,6 +41,7 @@ signed char mfGetTileContent(const struct MineField *const mf, const struct Coor
 void mfOpenTile(struct MineField *const mf, const struct Coords *const c);
 void mfSwitchMarkTile(struct MineField *const mf, const struct Coords *const c);
 
+void mfFloodOpen(struct MineField *const mf, const struct Coords *const c);
 
 struct Coords GenerateMine(const size_t);
 

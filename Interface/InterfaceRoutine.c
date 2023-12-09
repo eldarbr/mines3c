@@ -69,7 +69,11 @@ void InterfaceRoutine(void) {
 
             struct Coords choiceTile = {zState, xC, yC};
             if (next > 0) {
-                mfOpenTile(mf, &choiceTile);
+                if (mf->numberOpenTiles == 0) {
+                    mfFloodOpen(mf, &choiceTile);
+                } else {
+                    mfOpenTile(mf, &choiceTile);
+                }
             } else {
                 mfSwitchMarkTile(mf, &choiceTile);
             }
