@@ -166,6 +166,94 @@ size_t FindArrPosition(const struct MineField *const mf,
 }
 
 
+typedef struct FloodQueueElement FloodQueueElement;
+
+struct FloodQueueElement {
+    struct Coords tileCoords;
+    FloodQueueElement *nextElement;
+};
+
+void fqPush(FloodQueueElement **head, struct Coords *coords) {
+    if (head == 0) {
+        return;
+    }
+
+    FloodQueueElement *newElement =
+                (FloodQueueElement*)malloc(sizeof(FloodQueueElement));
+    newElement->tileCoords = *coords;
+    newElement->nextElement = 0;
+
+    if ((*head) == 0) {
+        (*head) = newElement;
+    } else {
+        FloodQueueElement *tail = *head;
+        while (tail->nextElement != 0) {
+            tail = tail->nextElement;
+        }
+        tail->nextElement = newElement;
+    }
+}
+
+struct Coords fqPop(FloodQueueElement **head) {
+    if (head == 0 || (*head) == 0) {
+        struct Coords x;
+        return x;
+    }
+    struct Coords value = (*head)->tileCoords;
+    FloodQueueElement *toFreee = (*head);
+    (*head) = (*head)->nextElement;
+    free(toFreee);
+    return value;
+}
+
+
+void mfFloodOpenQueue(struct MineField *const mf, struct Coords *startTile) {
+    if (mfGetTileMask(mf, startTile)) {
+        return;
+    }
+
+    FloodQueueElement *head = 0;
+    fqPush(&head, startTile);
+
+    while (head != 0) {
+        struct Coords currentCoords = fqPop(&head);
+
+        if (mfGetTileMask(mf, &currentCoords)) {
+            continue;
+        }
+
+        if (mfGetTileContent(mf, &currentCoords) == 0) {
+            struct Coords tmpC;
+
+            if (currentCoords.x > 0) {
+                tmpC = *startTile;
+                tmpC.x--;
+                fqPush(&head, &tmpC);
+            }
+            if (currentCoords.x + 1 < mf->fieldSize) {
+                tmpC = *startTile;
+                tmpC.x++;
+                fqPush(&head, &tmpC);
+            }
+            if (currentCoords.y > 0) {
+                tmpC = *startTile;
+                tmpC.y--;
+                fqPush(&head, &tmpC);
+            }
+            if (currentCoords.y + 1 < mf->fieldSize) {
+                tmpC = *startTile;
+                tmpC.y++;
+                fqPush(&head, &tmpC);
+            }
+
+            tmpC = *startTile;
+            tmpC.z = !tmpC.z;
+            fqPush(&head, &tmpC);
+        }
+    }
+}
+
+
 void mfFloodOpen(struct MineField *const mf, const struct Coords *const startTile) {
 
     if (mfGetTileMask(mf, startTile)) {

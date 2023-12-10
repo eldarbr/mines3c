@@ -41,6 +41,7 @@ signed char mfGetTileContent(const struct MineField *const mf, const struct Coor
 void mfOpenTile(struct MineField *const mf, const struct Coords *const c);
 void mfSwitchMarkTile(struct MineField *const mf, const struct Coords *const c);
 
+void mfFloodOpenQueue(struct MineField *const mf, struct Coords *);
 void mfFloodOpen(struct MineField *const mf, const struct Coords *const c);
 
 struct Coords GenerateMine(const size_t);
