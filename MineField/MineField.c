@@ -64,16 +64,12 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
         // save the impact of the mine
         struct Coords tempCoords;
 
-        if (newMine.z) {
-            tempCoords = newMine;
-            tempCoords.z--;
-            mineField->fieldContent[FindArrPosition(mineField, &tempCoords)]++;
-        }
-        if (!newMine.z) {
-            tempCoords = newMine;
-            tempCoords.z++;
-            mineField->fieldContent[FindArrPosition(mineField, &tempCoords)]++;
-        }
+        // impact to the other layer
+        tempCoords = newMine;
+        tempCoords.z = !tempCoords.z;
+        mineField->fieldContent[FindArrPosition(mineField, &tempCoords)]++;
+
+        // impact to the north of the mine
         if (newMine.x > 1) {
             tempCoords = newMine;
             tempCoords.x--;
