@@ -224,6 +224,9 @@ void mfFloodOpenQueue(struct MineField *const mf, struct Coords *startTile, cons
             continue;
         }
 
+        if (mfGetTileContent(mf, &currentCoords) < 0) {
+            continue;
+        }
         mfOpenTile(mf, &currentCoords);
         howManyMinesIOpened++;
         if (howManyMinesIOpened == openLimit) {
