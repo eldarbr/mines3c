@@ -71,7 +71,8 @@ void InterfaceRoutine(void) {
             if (next > 0) {
                 if (mf->numberOpenTiles == 0) {
                     mfFloodOpenQueue(mf, &choiceTile, mf->numberTotalTiles/2);
-                } else {
+                }
+                if (mf->numberOpenTiles == 0) {
                     mfOpenTile(mf, &choiceTile);
                 }
             } else {
