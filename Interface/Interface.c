@@ -12,6 +12,10 @@ void ClearPartOfScreen(void) {
 }
 
 
+/*
+*   Cursor goes to the desired x,y coords (1-based)
+*   if x equals 0, only moves the cursosr to y in the same line
+*/
 void RepositionCursor(size_t x, size_t y) {
     if (x < 0 || y < 0) {
         Exception("ERR: illegal argument (Interface.RepositionCursor)", 1);
@@ -23,12 +27,20 @@ void RepositionCursor(size_t x, size_t y) {
 }
 
 
+/*
+*   Print the text and exit from the program
+*/
 void Exception(const char message[], int q) {
     printf("%s", message);
     exit(q);
 }
 
 
+/*
+*   Output the z-state and draw the field, coordinate system
+*   Respects the masking of the field and the user marks
+*   Clears the screen then outputs starting from the first line
+*/
 void DrawMineField(const struct MineField *const mf, const bool zCoord) {
     ClearScreen();
 
@@ -49,21 +61,23 @@ void DrawMineField(const struct MineField *const mf, const bool zCoord) {
             bool markedTile = mfGetTileMarking(mf, &tempCoords);
 
             if (markedTile) {
-                printf("P ");
+                printf("P");
             } else if (!tileMask) {
-                printf("\u2592 ");
+                printf("\u2592"); // filler character
             } else {
                 if (tileContent > 0) {
-                    printf("%d ", tileContent);
+                    printf("%d", tileContent); // impact number
                 } else if (tileContent == 0) {
-                    printf("  ");
+                    printf(" "); // empty tile
                 } else {
-                    printf("x ");
+                    printf("x");   // a mine
                 }
             }
+            printf(" "); // column separator
         }
-        printf(" %lu\n", ix+1);
+        printf(" %lu\n", ix+1); // x-coordinate - a column after the field line
     }
+    // y-coordinates  -  a line after the field
     for (size_t iy = 0; iy != fieldSize; ++iy) {
         printf("%lu", iy+1);
         if (iy+1 < 10) {
@@ -86,9 +100,11 @@ int GetUserChoiceDiff(void) {
     if (scanf("%d", &userChoice) == 0) {
         return -1;
     }
+    // empty the buffer of not expected user input chars
     while ( getchar() != '\n' );
     return userChoice;
 }
+
 
 void Greetings(void) {
     printf("mines3c\n\n");

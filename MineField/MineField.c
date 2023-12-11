@@ -1,6 +1,10 @@
 #include "MineField.h"
 
 
+/*
+*   Allocates and initiates the field with random mine position
+*       and their impact to the neighbouring tiles
+*/
 struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) {
     
     // new seed each time you want to play
@@ -11,14 +15,17 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
     mineField->fieldSize = inpSize;
     mineField->numberTotalTiles = 2 * inpSize * inpSize;
 
+    // content array allocation
     unsigned long contentBytes = sizeof(signed char) * 2 * inpSize * inpSize;
     mineField->fieldContent = (signed char*)malloc(contentBytes);
     if (mineField->fieldContent == NULL) {
         free(mineField);
         return NULL;
     }
+    // default content value=0
     memset(mineField->fieldContent, 0, contentBytes);
 
+    // mask array allocation
     unsigned long maskBytes = sizeof(bool) * 2 * inpSize * inpSize;
     mineField->fieldMask = (bool*)malloc(maskBytes);
     if (mineField->fieldMask == NULL) {
@@ -26,8 +33,10 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
         free(mineField);
         return NULL;
     }
+    // default mask value=0
     memset(mineField->fieldMask, 0, maskBytes);
 
+    // marking array allocation
     unsigned long markingBytes = sizeof(bool) * 2 * inpSize * inpSize;
     mineField->fieldMarking = (bool*)malloc(markingBytes);
     if (mineField->fieldMarking == NULL) {
@@ -36,6 +45,7 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
         free(mineField);
         return NULL;
     }
+    // default marking value=0
     memset(mineField->fieldMarking, 0, markingBytes);
 
 
@@ -69,16 +79,19 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
             tempCoords.x--;
             mineField->fieldContent[FindArrPosition(mineField, &tempCoords)]++;
         }
+        // impact to the south of the mine
         if (newMine.x + 1 < inpSize) {
             tempCoords = newMine;
             tempCoords.x++;
             mineField->fieldContent[FindArrPosition(mineField, &tempCoords)]++;
         }
+        // impact to the west of the mine
         if (newMine.y > 1) {
             tempCoords = newMine;
             tempCoords.y--;
             mineField->fieldContent[FindArrPosition(mineField, &tempCoords)]++;
         }
+        // impact to the east of the mine
         if (newMine.y + 1 < inpSize) {
             tempCoords = newMine;
             tempCoords.y++;
@@ -90,6 +103,9 @@ struct MineField* mfConstructor(const size_t inpSize, const size_t inpNumMines) 
 }
 
 
+/*
+*   Deallocate all the memory that was allocated with the constructor
+*/
 void mfDestructor(struct MineField *const mineField) {
     free(mineField->fieldContent);
     free(mineField->fieldMask);
@@ -99,6 +115,10 @@ void mfDestructor(struct MineField *const mineField) {
 }
 
 
+/*
+*   Opens the tile if it was not marked
+*   Increases the counter of opened tiles
+*/
 void mfOpenTile(struct MineField *const mf, const struct Coords *const tile) {
     if (mfGetTileMarking(mf, tile)) {
         return;
@@ -149,6 +169,9 @@ struct Coords GenerateMine(const size_t fieldSize) {
 }
 
 
+/*
+*   Calculate the offset in the field arrays for the coordinates
+*/
 size_t FindArrPosition(const struct MineField *const mf,
                                 const struct Coords *const c) {
 
@@ -165,6 +188,10 @@ size_t FindArrPosition(const struct MineField *const mf,
     return position;
 }
 
+
+/*
+*   Queue implementation for the flood algorithm
+*/
 
 typedef struct FloodQueueElement FloodQueueElement;
 
@@ -207,6 +234,14 @@ struct Coords fqPop(FloodQueueElement **head) {
 }
 
 
+/*
+*   Flood open tiles using queue:
+*       1) retreive an item from the queue
+*       2) if it's not a mine, open the tile
+*       3) if the tile is empty (no impact info), add its neighbouring tiles to the queue
+*
+*   The algorithm is limited to the maximum possible opened tiles so the game wasn't so easy
+*/
 void mfFloodOpenQueue(struct MineField *const mf, struct Coords *startTile, const int openLimit) {
     if (mfGetTileMask(mf, startTile)) {
         return;
@@ -268,6 +303,9 @@ void mfFloodOpenQueue(struct MineField *const mf, struct Coords *startTile, cons
 }
 
 
+/*
+*   Flood open using recursion. Deprecated.
+*/
 void mfFloodOpen(struct MineField *const mf, const struct Coords *const startTile) {
 
     if (mfGetTileMask(mf, startTile)) {
