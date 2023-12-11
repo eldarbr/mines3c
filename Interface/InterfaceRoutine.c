@@ -70,7 +70,7 @@ void InterfaceRoutine(void) {
             struct Coords choiceTile = {zState, xC, yC};
             if (next > 0) {
                 if (mf->numberOpenTiles == 0) {
-                    mfFloodOpen(mf, &choiceTile);
+                    mfFloodOpenQueue(mf, &choiceTile, mf->numberTotalTiles/2);
                 } else {
                     mfOpenTile(mf, &choiceTile);
                 }
@@ -81,5 +81,5 @@ void InterfaceRoutine(void) {
 
     }
 
-
+    mfDestructor(mf);
 }

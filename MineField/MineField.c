@@ -196,7 +196,7 @@ void fqPush(FloodQueueElement **head, struct Coords *coords) {
 
 struct Coords fqPop(FloodQueueElement **head) {
     if (head == 0 || (*head) == 0) {
-        struct Coords x;
+        struct Coords x = {0,0,0};
         return x;
     }
     struct Coords value = (*head)->tileCoords;
@@ -207,10 +207,12 @@ struct Coords fqPop(FloodQueueElement **head) {
 }
 
 
-void mfFloodOpenQueue(struct MineField *const mf, struct Coords *startTile) {
+void mfFloodOpenQueue(struct MineField *const mf, struct Coords *startTile, const int openLimit) {
     if (mfGetTileMask(mf, startTile)) {
         return;
     }
+
+    int howManyMinesIOpened = 0;
 
     FloodQueueElement *head = 0;
     fqPush(&head, startTile);
@@ -222,34 +224,43 @@ void mfFloodOpenQueue(struct MineField *const mf, struct Coords *startTile) {
             continue;
         }
 
+        mfOpenTile(mf, &currentCoords);
+        howManyMinesIOpened++;
+        if (howManyMinesIOpened == openLimit) {
+            break;
+        }
+
         if (mfGetTileContent(mf, &currentCoords) == 0) {
             struct Coords tmpC;
 
             if (currentCoords.x > 0) {
-                tmpC = *startTile;
+                tmpC = currentCoords;
                 tmpC.x--;
                 fqPush(&head, &tmpC);
             }
             if (currentCoords.x + 1 < mf->fieldSize) {
-                tmpC = *startTile;
+                tmpC = currentCoords;
                 tmpC.x++;
                 fqPush(&head, &tmpC);
             }
             if (currentCoords.y > 0) {
-                tmpC = *startTile;
+                tmpC = currentCoords;
                 tmpC.y--;
                 fqPush(&head, &tmpC);
             }
             if (currentCoords.y + 1 < mf->fieldSize) {
-                tmpC = *startTile;
+                tmpC = currentCoords;
                 tmpC.y++;
                 fqPush(&head, &tmpC);
             }
 
-            tmpC = *startTile;
+            tmpC = currentCoords;
             tmpC.z = !tmpC.z;
             fqPush(&head, &tmpC);
         }
+    }
+    while (head != 0) {
+        fqPop(&head);
     }
 }
 
